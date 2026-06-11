@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sample1m 테스트</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0f172a;
+        --panel: #111827;
+        --panel-2: #1f2937;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --border: #334155;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background: radial-gradient(circle at top, #1e293b 0%, var(--bg) 55%);
+        color: var(--text);
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .app {
+        width: min(920px, 100%);
+        background: rgba(17, 24, 39, 0.92);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 24px;
+      }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+      button, input {
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 15px;
+      }
+      button {
+        border: 0;
+        font-weight: 700;
+        color: #03111c;
+        background: linear-gradient(135deg, var(--accent), #a78bfa);
+        cursor: pointer;
+      }
+      button.secondary {
+        background: var(--panel-2);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      button:disabled { opacity: 0.55; cursor: not-allowed; }
+      input {
+        flex: 1;
+        min-width: 220px;
+        border: 1px solid var(--border);
+        background: #020617;
+        color: var(--text);
+        outline: none;
+      }
+      .status {
+        margin-bottom: 14px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid var(--border);
+        color: var(--muted);
+      }
+      .log {
+        width: 100%;
+        min-height: 260px;
+        resize: vertical;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: #020617;
+        color: #d1fae5;
+        padding: 14px;
+        font: 14px/1.5 Consolas, monospace;
+      }
+      canvas {
+        width: 100%;
+        height: 220px;
+        display: block;
+        margin-bottom: 16px;
+        background: #000;
+        border: 1px solid var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <h1>sample1m 테스트</h1>
+      <p>이 페이지는 Emscripten MODULARIZE 출력인 <code>sample1.js</code>를 불러와서 <code>sayHello2</code> 함수를 호출합니다.</p>
+
+      <div class="status" id="status">모듈을 불러오는 중...</div>
+      <canvas id="canvas" tabindex="-1"></canvas>
+
+      <div class="row">
+        <input id="nameInput" type="text" value="Codex" />
+      </div>
+
+      <div class="row">
+        <button id="btnRun" disabled>WASM 실행</button>
+        <button id="btnClear" class="secondary">로그 지우기</button>
+      </div>
+
+      <textarea id="output" class="log" readonly spellcheck="false"></textarea>
+    </div>
+
+    <script src="out/build/emscripten-debug/sample1.js"></script>
+    <script>
+      const statusEl = document.getElementById("status");
+      const outputEl = document.getElementById("output");
+      const btnRun = document.getElementById("btnRun");
+      const btnClear = document.getElementById("btnClear");
+      const canvas = document.getElementById("canvas");
+      const nameInput = document.getElementById("nameInput");
+
+      let wasmModule = null;
+
+      function appendLog(message) {
+        outputEl.value += message + "\n";
+        outputEl.scrollTop = outputEl.scrollHeight;
+      }
+
+      function setStatus(message) {
+        statusEl.textContent = message;
+      }
+
+      btnClear.addEventListener("click", () => {
+        outputEl.value = "";
+      });
+
+      btnRun.addEventListener("click", () => {
+        if (!wasmModule) {
+          appendLog("모듈이 아직 준비되지 않았습니다.");
+          return;
+        }
+
+        const name = nameInput.value.trim() || "world";
+
+        if (typeof wasmModule.ccall === "function") {
+          if (typeof wasmModule._sayHello2 === 'function'){
+            appendLog('true');
+          } else {
+            appendLog('false');
+          }
+          appendLog("WASM에서 C++ sayHello2() 함수를 호출합니다...");
+          wasmModule.ccall("sayHello2", null, ["string"], [name]);
+        } else {
+          appendLog("`ccall`이 없습니다. `-sEXPORTED_RUNTIME_METHODS=['ccall']`로 다시 빌드하세요.");
+        }
+      });
+
+      const moduleConfig = {
+        canvas,
+        print: (...args) => appendLog(args.join(" ")),
+        printErr: (...args) => appendLog("[err] " + args.join(" ")),
+        noInitialRun: true,
+        onRuntimeInitialized() {
+          appendLog("Runtime initialized.");
+          setStatus("런타임 초기화 완료.");
+        }
+      };
+
+      setStatus("sample1.js를 불러오는 중...");
+      createSample1(moduleConfig).then((mod) => {
+        wasmModule = mod;
+        btnRun.disabled = false;
+        setStatus("모듈 준비 완료.");
+        appendLog("Module promise resolved.");
+      }).catch((err) => {
+        setStatus("모듈 로드 중 오류가 발생했습니다.");
+        appendLog("Load failed: " + err);
+        console.error(err);
+      });
+    </script>
+  </body>
+</html>

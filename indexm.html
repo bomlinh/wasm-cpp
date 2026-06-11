@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <title>sample1m</title>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <pre id="output"></pre>
+
+    <script src="sample1m.js"></script>
+    <script>
+      const output = document.getElementById("output");
+      const canvas = document.getElementById("canvas");
+
+      const ModuleConfig = {
+        canvas,
+        print: (...args) => {
+          output.textContent += args.join(" ") + "\n";
+        },
+        onRuntimeInitialized() {
+          console.log("WASM ready");
+        }
+      };
+
+      Module(ModuleConfig).then((mod) => {
+        console.log("Module loaded", mod);
+      });
+    </script>
+  </body>
+</html>

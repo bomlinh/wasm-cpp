@@ -1,0 +1,1 @@
+D:\projects\emsdk\upstream\emscripten\em++.exe -g -sMODULARIZE=1 -sEXPORT_NAME=createSample1 -sEXPORTED_FUNCTIONS=[_main,_sayHello,_sayHello2] -sEXPORTED_RUNTIME_METHODS=[ccall] -sINVOKE_RUN=0 -sENVIRONMENT=web,worker,node @CMakeFiles\sample1.dir\objects1.rsp -o sample1.js

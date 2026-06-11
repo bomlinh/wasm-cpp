@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"D:/projects/c_sample/out/build/msys2-clang64-debug/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

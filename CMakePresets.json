@@ -1,0 +1,58 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "native-debug",
+            "displayName": "Native Debug",
+            "description": "Configure a local native build with MinGW CLANG64",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+            }
+        },
+        {
+            "name": "msys2-clang64-debug",
+            "displayName": "MSYS2 CLANG64 Debug",
+            "description": "Configure a native build using MSYS2 CLANG64",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER": "C:/msys64/clang64/bin/clang.exe",
+                "CMAKE_CXX_COMPILER": "C:/msys64/clang64/bin/clang++.exe",
+                "CMAKE_MAKE_PROGRAM": "C:/msys64/clang64/bin/mingw32-make.exe",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+            }
+        },
+        {
+            "name": "emscripten-debug",
+            "displayName": "Emscripten Debug",
+            "description": "Configure a WebAssembly build with Emscripten",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "D:/projects/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
+                "CMAKE_MAKE_PROGRAM": "C:/msys64/clang64/bin/mingw32-make.exe",
+                "CMAKE_EXECUTABLE_SUFFIX": ".js",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "native-debug",
+            "configurePreset": "native-debug"
+        },
+        {
+            "name": "msys2-clang64-debug",
+            "configurePreset": "msys2-clang64-debug"
+        },
+        {
+            "name": "emscripten-debug",
+            "configurePreset": "emscripten-debug"
+        }
+    ]
+}

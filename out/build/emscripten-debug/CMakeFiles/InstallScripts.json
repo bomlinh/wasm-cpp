@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"D:/projects/c_sample/out/build/emscripten-debug/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <title>sample1</title>
+  </head>
+  <body>
+    <canvas id="canvas" tabindex="-1"></canvas>
+
+    <script>
+      var Module = {
+        canvas: document.getElementById("canvas"),
+        onRuntimeInitialized() {
+          console.log("WASM ready");
+        }
+      };
+    </script>
+
+    <script src="sample1.js"></script>
+  </body>
+</html>
